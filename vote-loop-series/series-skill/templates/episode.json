@@ -1,0 +1,24 @@
+{
+  "series": "SERIES NAME",
+  "episode": 1,
+  "previous_vote_winner": null,
+  "ticking_number": "what counts down or up, e.g. 400 METERS",
+  "lines": [
+    {"t": 0.0, "voice": "You wake. The handle rattles.", "caption": "YOU WAKE UP.", "red": "WAKE", "shot": "home1", "event": "handle already rattling"},
+    {"t": 3.2, "voice": "Twenty-three days.", "caption": "23 DAYS", "yellow": "23", "shot": "prop", "event": "calendar close-up"}
+  ],
+  "stamp": {"t": 3.5, "text": "MOST OF YOU SAID -> [WINNER]"},
+  "wide_shot_t": 5.5,
+  "spectacle": {"t": 22.0, "duration": 3.5},
+  "clue": {"t": 14.0, "what": "an eye in the gap, about one second"},
+  "vote": {
+    "t": 30.0,
+    "spoken": "Option A, option B, or option C? Comment one, two or three.",
+    "caption": "WHAT DO YOU DO?",
+    "options": [
+      {"n": 1, "verb": "RUN", "tag": "SHORT TAG", "pulls_on": "escape", "next_opens": "how the next episode opens if this wins"},
+      {"n": 2, "verb": "HIDE", "tag": "SHORT TAG", "pulls_on": "protection", "next_opens": "write how the next episode opens if this wins"}
+    ]
+  },
+  "end": 36.0
+}

@@ -1,0 +1,100 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// === Vote Loop episode template. Draw everything with code. ===
+// render.py calls window.drawFrame(t) for every frame, so draw ONLY from t (no Date.now, no Math.random without a seed).
+const W = 1080, H = 1920;
+const cv = document.getElementById('c'), g = cv.getContext('2d');
+
+// Fill from series/epNN/episode.json (paste the lines here or fetch it)
+const EP = {
+  end: 36.0,
+  lines: [ /* {t, caption, red, yellow, shot} */ ],
+  stamp: { t: 3.5, text: 'MOST OF YOU SAID → [WINNER]' },
+  vote: { t: 30.0, caption: 'WHAT DO YOU DO?', options: [ /* {n, verb, tag} */ ] }
+};
+window.EP_DURATION = EP.end;
+
+// seeded random so frames are deterministic
+function rnd(seed) { const x = Math.sin(seed * 127.1) * 43758.5453; return x - Math.floor(x); }
+const ease = x => x < .5 ? 2*x*x : 1 - Math.pow(-2*x + 2, 2) / 2;
+const SAFE = { left: 120, right: 960, top: 270, bottom: 1480, capY: 1180, capMaxW: 640 };
+
+// ---- characters / props: write small functions, return nothing, draw at (x,y,scale) ----
+function hero(x, y, s, t) { /* head, hoodie, legs; bob with Math.sin(t*8) */ }
+function companion(x, y, s, t) { /* the companion, makes its own moves */ }
+
+// ---- home setups: 4-5 reusable camera setups, every one MOVES ----
+const HOME = {
+  home1(t, lt) { /* rear chase: slow push in */ },
+  home2(t, lt) { /* front close-up */ },
+  prop(t, lt)  { /* prop close-up */ },
+  two(t, lt)   { /* ground two-shot */ },
+  wide(t, lt)  { /* goal + threat + odds */ }
+};
+
+function background(t) {
+  const gr = g.createLinearGradient(0, 0, 0, H);
+  gr.addColorStop(0, '#0a0a14'); gr.addColorStop(1, '#1a1020'); // dark, glowing
+  g.fillStyle = gr; g.fillRect(0, 0, W, H);
+}
+
+// ---- text: ONE layer at a time (caption OR card OR stamp) ----
+function outlinedText(txt, x, y, size, color) {
+  g.font = `900 ${size}px "Oswald","Impact","Arial Narrow",sans-serif`;
+  g.textAlign = 'center'; g.lineWidth = size / 6; g.strokeStyle = '#000'; g.lineJoin = 'round';
+  g.strokeText(txt, x, y); g.fillStyle = color; g.fillText(txt, x, y);
+}
+function caption(l) {
+  const words = l.caption.split(' ');
+  const total = words.length; let size = 96;
+  g.font = `900 ${size}px Impact,sans-serif`;
+  while (g.measureText(l.caption).width > SAFE.capMaxW && size > 50) { size -= 4; g.font = `900 ${size}px Impact,sans-serif`; }
+  // colour one word: yellow = new info, red = danger/twist
+  let x = W / 2 - g.measureText(l.caption).width / 2, y = SAFE.capY + 120;
+  g.textAlign = 'left';
+  words.forEach(w => {
+    const col = (l.red && w.includes(l.red)) ? '#ff3b30' : (l.yellow && w.includes(l.yellow)) ? '#ffd23f' : '#fff';
+    g.lineWidth = size / 6; g.strokeStyle = '#000'; g.strokeText(w + ' ', x, y);
+    g.fillStyle = col; g.fillText(w + ' ', x, y); x += g.measureText(w + ' ').width;
+  });
+}
+
+function activeLine(t) {
+  let a = null; for (const l of EP.lines) if (t >= l.t) a = l; return a;
+}
+
+function drawVote(t) {
+  const lt = t - EP.vote.t;
+  const y0 = 760;
+  outlinedText(EP.vote.caption, W / 2 - 60, y0, 90, '#fff');
+  EP.vote.options.forEach((o, i) => {
+    const a = ease(Math.min(1, Math.max(0, (lt - i * 0.25) / 0.4)));
+    const y = y0 + 90 + i * 150, x = 160 + (1 - a) * 400;
+    const col = ['#2e7dff', '#f0a020', '#e03030'][i];
+    g.fillStyle = col; g.beginPath(); g.roundRect(x, y, 640, 120, 60); g.fill();
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(x + 60, y + 60, 40, 0, 7); g.fill();
+    g.fillStyle = '#000'; g.font = '900 52px Impact,sans-serif'; g.textAlign = 'center'; g.fillText(o.n, x + 60, y + 76);
+    g.fillStyle = '#fff'; g.textAlign = 'left'; g.font = '900 46px Impact,sans-serif'; g.fillText(o.verb, x + 125, y + 58);
+    g.font = '700 26px Arial,sans-serif'; g.fillText(o.tag, x + 125, y + 98);
+  });
+}
+
+window.drawFrame = function (t) {
+  g.clearRect(0, 0, W, H);
+  background(t);
+  const l = activeLine(t);
+  const shot = (l && HOME[l.shot]) ? l.shot : 'home1';
+  HOME[shot](t, l ? t - l.t : 0);
+  // vignette keeps it dark and glowing
+  const v = g.createRadialGradient(W/2, H/2, 400, W/2, H/2, 1200);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.6)'); g.fillStyle = v; g.fillRect(0, 0, W, H);
+  // one text layer at a time
+  if (t >= EP.vote.t) drawVote(t);
+  else if (EP.stamp && t >= EP.stamp.t - 0.3 && t < EP.stamp.t + 1.2 && EP.stamp.text.indexOf('[WINNER]') < 0) {
+    outlinedText(EP.stamp.text, W / 2, SAFE.capY + 120, 60, '#ffd23f');
+  } else if (l && l.caption) caption(l);
+};
+</script></body></html>
