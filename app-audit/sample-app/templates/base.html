@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NoteBox</title>
+  <style>
+    body { font-family: sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+    nav a { margin-right: 1rem; }
+    input, textarea { display: block; margin: .5rem 0; width: 100%; box-sizing: border-box; }
+    button { margin: .25rem .25rem .25rem 0; padding: .4rem .8rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/notes">My notes</a>
+    <a href="/pricing">Pricing</a>
+    {% if session.username %}<a href="/logout">Log out ({{ session.username }})</a>{% else %}<a href="/login">Log in</a>{% endif %}
+  </nav>
+  <hr>
+  {% block body %}{% endblock %}
+</body>
+</html>

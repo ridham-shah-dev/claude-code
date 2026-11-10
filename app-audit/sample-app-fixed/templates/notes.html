@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>My notes</h1>
+
+<form method="get" action="/notes">
+  <label for="q">Search title</label>
+  <input id="q" name="q" value="{{ q }}">
+  <button type="submit">Search</button>
+</form>
+{% if q %}<p>Results for: {{ q }}</p>{% endif %}
+
+<ul>
+  {% for n in notes %}
+  <li><a href="/notes/{{ n.id }}">{{ n.title }}</a></li>
+  {% endfor %}
+</ul>
+
+<p><a class="button" href="/notes/export" download>Export notes</a></p>
+
+<h2>New note</h2>
+<form method="post" action="/notes">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label for="title">Title</label>
+  <input id="title" name="title" maxlength="120" required>
+  <label for="body">Note</label>
+  <textarea id="body" name="body" maxlength="10000"></textarea>
+  <button type="submit">Save note</button>
+</form>
+{% endblock %}

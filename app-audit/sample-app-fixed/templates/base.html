@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NoteBox</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/notes">My notes</a>
+    {% if session.username %}
+    <form method="post" action="/logout">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit">Log out ({{ session.username }})</button>
+    </form>
+    {% else %}<a href="/login">Log in</a>{% endif %}
+  </nav>
+  <hr>
+  {% block body %}{% endblock %}
+</body>
+</html>

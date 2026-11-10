@@ -1,0 +1,7 @@
+body { font-family: sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+nav a, nav form { margin-right: 1rem; display: inline-block; }
+nav a { padding: .4rem 0; min-height: 24px; }
+label { display: block; margin-top: .5rem; }
+input, textarea { display: block; margin: .25rem 0 .5rem; width: 100%; box-sizing: border-box; padding: .4rem; }
+button, .button { margin: .25rem .25rem .25rem 0; padding: .5rem .9rem; min-height: 28px; }
+.error { color: #b00020; }

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>My notes</h1>
+
+<form method="get" action="/notes">
+  <input name="q" placeholder="Search title" value="{{ q }}">
+  <button type="submit">Search</button>
+</form>
+{% if q %}<p>Results for: {{ q|safe }}</p>{% endif %}
+
+<ul>
+  {% for n in notes %}
+  <li><a href="/notes/{{ n.id }}">{{ n.title }}</a></li>
+  {% endfor %}
+</ul>
+
+<button type="button" id="export-btn">Export notes</button>
+
+<h2>New note</h2>
+<form method="post" action="/notes">
+  <input name="title" placeholder="Title" required>
+  <textarea name="body" placeholder="Write here"></textarea>
+  <button type="submit">Save</button>
+  <button type="submit">Save note</button>
+</form>
+{% endblock %}

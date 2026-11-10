@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>{{ note.title }}</h1>
+<div>{{ note.body|safe }}</div>
+<p><a href="/notes">Back</a></p>
+{% endblock %}
